@@ -8,14 +8,14 @@ That's where Squeevents comes in.
 
 Squeevents allows you to write functions in your forum's Custom Header that get called during component events. These can be used to modify both the DOM and component object properties.
 
-## Usage
+## Basic usage
 
-When installed and enabled, the Squeevents API is loaded automatically on every Forum page. Create a `<script>` element in your Custom Header and simply call one of the methods below to register a function to the desired event.
+When installed and enabled, the Squeevents API is loaded automatically on every Forum page. Create a `<script>` element in your Custom Header and simply call one of the following methods to register a function to the desired event.
 
-    squeevents.extend(module, method, callback) ...
-    squeevents.override(module, method, callback) ...
+    squeevents.extend(moduleName, method, callback) ...
+    squeevents.override(moduleName, method, callback) ...
 
- + `module` is a string containing the path to the desired component class, as it would appear in an `import` statement.
+ + `moduleName` is a string containing the path to the desired component class, as it would appear in an `import` statement.
  + `method` is a string containing the name of the method on the component class that our callback will extend or override.
  + `callback` is a function that will be called at the component event.
     
@@ -25,6 +25,8 @@ An example:
 
     <script>
 
+    //Whenever a Post is drawn, any images it contains are
+    //wrapped in a link to the image
     squeevents.extend('flarum/components/Post', 'config', function() {
       $(this.element).find('.Post-body img').wrap(function() {
         var link = document.createElement('a');
@@ -37,6 +39,19 @@ An example:
     </script>
     
 If the forum is in debug mode, then Squeevents will log messages to the console when a registered event occurs, as well as if there are any errors while resolving the module and method, or while executing the callback function. If the forum is not in debug mode, events and errors will occur silently. This behavior can be overridden by setting `squeevents.enable_log` in a script in the Custom Header.
+
+Squeevents is for Forum views only and will not be loaded on Admin pages. The Custom Header is loaded
+for both Admin and Forum pages, so good practice to avoid reference errors would be to wrap all references to `squeevents` in a check for the `squeevents` object.
+
+An example:
+
+    <script>
+    
+    if (squeevents) {
+      ...
+    }
+    
+    </script>
 
 ## Extend and Override
     
@@ -56,6 +71,39 @@ A selection of methods which all Flarum components inherit, with details as give
  + `view` - Get the virtual DOM that represents the component's view.
 
 For more info on virtual DOM and drawing logic, see Mithril's documentation.
+
+## Require
+
+If your scripts need access to an object exported by a module, for example a utility function, you can use the `squeevents.require` method.
+
+    squeevents.require(moduleName, alias, exportName) ...
+
+ + `moduleName` is, as in the `extend` and `override` methods, a string containing a path to the desired module.
+ + `alias` is the name that your script will use to access the object.
+ + `exportName` is the name that the object is exported as. For most modules, this name will be `default`.
+
+Call the method from the global scope of your script. In the callback functions of `extend` or `override`, the requested objects will be accessible under `squeevents.requisites`. (Do not call `require` from within the callback functions: nothing will happen.)
+
+An example:
+
+    <script>
+
+    squeevents.require('flarum/utils/extractText', 'extractText', 'default');
+
+    //Extracts and logs the text of every button
+    //every time its virtual DOM is generated (which is often).
+    squeevents.extend('flarum/components/Button', 'view', function(vdom) {
+      var text = squeevents.requisites.extractText(vdom);
+      if (text)
+        console.log('The button says ' + text);
+    });
+
+    </script>
+
+Three objects are automatically accessible in the `requisites` object. You don't have to call `require` to be able to use them. They are:
+
+ + The default object from module `'flarum/app'`, with alias `app`.
+ + The `extend` and `override` methods from the module `'flarum/extend'`, with aliases `extend` and `override` respectively.
 
 ## JQuery
 

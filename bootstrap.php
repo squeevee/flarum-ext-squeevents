@@ -26,13 +26,12 @@ class ConfigureWebAppListener
 
     public function configureWebApp(ConfigureWebApp $event)
     {
-        if ($event->isForum())
-        {
-            $headerScript = file_get_contents(__DIR__ . '/js/header.js');
+        if ($event->isForum()) {
+            $headerScript = file_get_contents(__DIR__ . '/js/header/header.js');
             if ($this->app->inDebugMode())
             {
                 $event->view->addHeadString('<script>' . $headerScript . '</script>');
-                $event->view->addHeadString('<script>/*debug mode*/ window.squeevents.enable_log=true;</script>');
+                $event->view->addHeadString('<script>/*debug mode*/ squeevents.enable_log=true;</script>');
             }
             else
             {
@@ -40,7 +39,7 @@ class ConfigureWebAppListener
                 $event->view->addHeadString('<script>' . $minifier->minify() . '</script>');
             }
 
-            $event->addAssets([__DIR__ . '/js/extension.js']);
+            $event->addAssets([__DIR__ . '/js/extension/dist/extension.js']);
             $event->addBootstrapper('squeevee/squeevents/main');
         }
     }

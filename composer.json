@@ -7,7 +7,12 @@
     },
     "extra": {
         "flarum-extension": {
-            "title": "Squeevents"
+            "title": "Squeevents",
+            "icon": {
+                "name": "exclamation",
+                "backgroundColor": "#993366",
+                "color": "#ccccff"
+            }
         }
     }
 }

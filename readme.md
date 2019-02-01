@@ -1,5 +1,9 @@
 # Squeevents
 
+**THIS PROJECT IS DEAD. IT WILL NOT BE UPDATED FOR BETA 8**
+
+Webpack supports dynamic importing of modules, but it's finnicky and expensive. This is no longer by any means a practical approach to ad hoc frontend adjustments. I'm looking into other ways that won't require a full-on extension, but they will likely be DOM-oriented and therefore probably won't require support from an extension themselves.
+
 A simple linker for accessing Flarum component events from ad-hoc scripts.
 
 Sometimes you want to make small adjustments to your Flarum's view. On the one hand LESS might not be dynamic enough to get the job done; but on the other having a dozen micro-extensions, or one big cluttered 'junk drawer' extension could spell trouble for keeping your site organized and maintainable.
